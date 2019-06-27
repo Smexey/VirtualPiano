@@ -5,6 +5,5 @@ public class Test {
         System.out.println("asff");
         System.out.println("GIT COMEEEEET");
         System.out.println("GIT COMEEEEET2");
-        System.out.println("3");
     }
 }
