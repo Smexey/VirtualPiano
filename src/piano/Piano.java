@@ -1,5 +1,6 @@
 package piano;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.util.*;
@@ -13,8 +14,8 @@ import java.io.IOException;
  * Piano
  */
 public class Piano {
-
-    private  Map<Character, Pair<String, Integer>> mapa;
+    private Map<Character, Pair<String, Integer>> mapa;
+    private ArrayList<Composition> comparr = new ArrayList<Composition>();
 
     public Piano(String path) {
         loadmap(path);
@@ -28,6 +29,14 @@ public class Piano {
         return mapa;
     }
 
+    public void addNewComp(String path) {
+        comparr.add(new Composition(path));
+    }
+
+    public ArrayList<Composition> getCompArr() {
+        return comparr;
+    }
+
     public void loadmap(String path) {
         mapa = new HashMap<>();
         File file = new File(path);
@@ -37,7 +46,7 @@ public class Piano {
             String text = null;
 
             while ((text = reader.readLine()) != null) {
-                // ubaci u mapu
+                // ubaci u mapu taj line csv
                 String[] vals = text.split(",");
                 mapa.put(vals[0].charAt(0), new Pair<String, Integer>(vals[1], Integer.parseInt(vals[2])));
             }

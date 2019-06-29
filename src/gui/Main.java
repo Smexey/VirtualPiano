@@ -3,9 +3,16 @@ package gui;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import piano.Piano;
 
@@ -14,10 +21,11 @@ import piano.Piano;
  */
 public class Main extends Application {
     private static Piano piano;
+    private KeyboardPane keyboard;
 
-    public Main(){
-        
+    public Main() {
     }
+
     public static void main(String[] args) {
         System.out.println("started main");
 
@@ -30,22 +38,39 @@ public class Main extends Application {
         launch(args);
     }
 
+
+    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Hello World!");
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
+        primaryStage.setTitle("Mužiža");
+        // keyboard = new Scene();
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        primaryStage.setScene(new Scene(root, 300, 250));
+
+
+        BorderPane root = new BorderPane();
+        keyboard = new KeyboardPane(300,200);
+
+        // root.getChildren().add(canvas);
+        root.setTop(keyboard);
+        root.setBottom(new Button("asdf"));
+        root.setLeft(new Button("left"));
+        // root.setRight(keyboard);
+        
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
+        System.out.println(keyboard.getWidth());
+
+    }
+
+    private void drawShapes(GraphicsContext gc){
+        gc.setFill(Color.GREEN);
+        gc.setStroke(Color.BLUE);
+        gc.setLineWidth(5);
+        gc.strokeLine(40, 10, 10, 40);
+        gc.fillOval(10, 60, 30, 30);
+        gc.strokeOval(60, 60, 30, 30);
+        
     }
 }
