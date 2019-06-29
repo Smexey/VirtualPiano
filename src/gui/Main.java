@@ -13,22 +13,26 @@ import piano.Piano;
  * Main
  */
 public class Main extends Application {
-    
+    private static Piano piano;
+
+    public Main(Piano p) {
+        piano = p;
+    }
+
     public static void main(String[] args) {
         System.out.println("started main");
-        
+
         // String path = args[0];
         String path = "C:\\Users\\Pyo\\Desktop\\VirtualPiano\\map.csv";
-        Piano p = new Piano(path);
-
-
-        //showwindow
+        // Main m = new Main(new Piano(path));
+        piano = new Piano(path);
+        // showwindow
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
+
         primaryStage.setTitle("Hello World!");
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
@@ -38,11 +42,11 @@ public class Main extends Application {
                 System.out.println("Hello World!");
             }
         });
-        
+
         StackPane root = new StackPane();
         root.getChildren().add(btn);
         primaryStage.setScene(new Scene(root, 300, 250));
         primaryStage.show();
-        
+
     }
 }

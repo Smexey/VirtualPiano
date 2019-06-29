@@ -14,11 +14,18 @@ import java.io.IOException;
  */
 public class Piano {
 
-    private static Map<Character, Pair<String, Integer>> mapa;
+    private  Map<Character, Pair<String, Integer>> mapa;
 
     public Piano(String path) {
-        if (mapa == null)
-            loadmap(path);
+        loadmap(path);
+    }
+
+    public Piano(Map<Character, Pair<String, Integer>> m) {
+        mapa = m;
+    }
+
+    Map<Character, Pair<String, Integer>> getMap() {
+        return mapa;
     }
 
     public void loadmap(String path) {
@@ -31,8 +38,8 @@ public class Piano {
 
             while ((text = reader.readLine()) != null) {
                 // ubaci u mapu
-                String [] vals = text.split(",");
-                mapa.put(vals[0].charAt(0), new Pair<String,Integer>(vals[1], Integer.parseInt(vals[2])));
+                String[] vals = text.split(",");
+                mapa.put(vals[0].charAt(0), new Pair<String, Integer>(vals[1], Integer.parseInt(vals[2])));
             }
         } catch (IOException e) {
             System.out.println(e);
