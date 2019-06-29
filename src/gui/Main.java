@@ -15,10 +15,9 @@ import piano.Piano;
 public class Main extends Application {
     private static Piano piano;
 
-    public Main(Piano p) {
-        piano = p;
+    public Main(){
+        
     }
-
     public static void main(String[] args) {
         System.out.println("started main");
 
@@ -26,13 +25,13 @@ public class Main extends Application {
         String path = "C:\\Users\\Pyo\\Desktop\\VirtualPiano\\map.csv";
         // Main m = new Main(new Piano(path));
         piano = new Piano(path);
+        System.out.println("prelaunch");
         // showwindow
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         primaryStage.setTitle("Hello World!");
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
