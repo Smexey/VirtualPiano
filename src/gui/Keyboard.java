@@ -1,4 +1,4 @@
-package guiawt;
+package gui;
 
 import java.awt.*;
 
@@ -48,7 +48,7 @@ public class Keyboard extends JPanel {
                 g.drawChars(keychars, i, 1, (int) (x + keywidth / 2 - fontsize * 0.3), (int) (y + keyheight * 3 / 4));
             }
             x += keywidth;
-            if (((i % 7) != 2) && ((i % 7) != 6)) {
+            if (((i % 7) != 2) && ((i % 7) != 6)&& i!= NUMOFWHITEKEYS) {
                 g.fillRect((int) (x - keywidth / 3 / 2), (int) y, (int) blackkeywidth, (int) blackkeyheight);
                 if (labelsflag) {
                     g.setColor(Color.white);

@@ -1,4 +1,4 @@
-package guiawt;
+package gui;
 
 import java.awt.Dimension;
 
