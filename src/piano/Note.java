@@ -17,4 +17,9 @@ public class Note extends MusicSymbol {
     }
 
 
+    @Override
+    public String toString() {
+        return "Note: " + c +" "+super.toString();
+    }
+
 }

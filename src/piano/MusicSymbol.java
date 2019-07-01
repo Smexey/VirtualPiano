@@ -9,7 +9,7 @@ public class MusicSymbol {
     private Duration d;
 
     public static enum Duration {
-        QUART(1), HALF(2);
+        EIGHT(1), QUART(2);
         private final int number;
         private Duration(int number) {
             this.number = number;
@@ -25,6 +25,11 @@ public class MusicSymbol {
 
     public Duration getDur(){
         return d;
+    }
+
+    @Override
+    public String toString() {
+        return d.name();
     }
 
 }

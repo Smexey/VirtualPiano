@@ -1,11 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -21,20 +17,18 @@ public class Mainframe extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private Keyboard keyboard;
+
+
     private Piano piano;
 
-    public Mainframe(String name) {
+    public Mainframe(String name) throws MidiUnavailableException {
         super(name);
         setSize(new Dimension(300, 200));
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         keyboard = new Keyboard();
-        try {
-            piano = new Piano();
-        } catch (MidiUnavailableException e) {
-            System.out.println(e);
-        }
+        piano = new Piano();
 
         piano.loadmap(Piano.DEFAULT_MAP_PATH);
 
@@ -49,23 +43,18 @@ public class Mainframe extends JFrame {
         add(piano, BorderLayout.CENTER);
         addKeyListener(piano);
         add(keyboard, BorderLayout.SOUTH);
-
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        // for (Component var : getComponents()) {
-        //     var.repaint();
-        // }
     }
 
     public static void main(String[] args) {
-        Mainframe frame = new Mainframe("Mužiža");
+        try {
+            Mainframe frame = new Mainframe("Mužiža");
+            frame.setSize(new Dimension(1000, 500));
+            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            frame.setVisible(true);
+        } catch (MidiUnavailableException e) {
+            System.out.println(e);
+        }
 
-        frame.setSize(new Dimension(1000, 500));
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-        frame.setVisible(true);
     }
 
 }

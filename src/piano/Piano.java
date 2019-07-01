@@ -18,8 +18,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import lib.Pair;
-
 /**
  * Piano
  */
@@ -27,9 +25,22 @@ public class Piano extends JPanel implements KeyListener {
     private static final long serialVersionUID = 1L;
     public static final int DEFAULT_INSTRUMENT = 1;
     public static final String DEFAULT_MAP_PATH = "map.csv";
+    public static final int DEFAULT_VELOCITY = 60;
 
-    private Map<Character, Pair<Boolean,Pair<String, Integer>>> mapa;
-    private ArrayList<Composition> comparr = new ArrayList<Composition>();
+    private static class MidiNoteInfo{
+        private boolean isplaying=false;
+        private String name;
+        private int midival;
+        private long t_start;
+        public MidiNoteInfo(String n,int midivall){
+            midival = midivall;
+            name = n;
+        }
+
+    }
+
+    private Map<Character, MidiNoteInfo> mapa;
+    private Composition comp;
 
     private MidiChannel channel;
 
@@ -53,21 +64,21 @@ public class Piano extends JPanel implements KeyListener {
         loadmap(path);
     }
 
-    public Piano(Map<Character, Pair<Boolean, Pair<String, Integer>>> m) throws MidiUnavailableException {
+    public Piano(Map<Character, MidiNoteInfo> m) throws MidiUnavailableException {
         this();
         mapa = m;
     }
 
-    Map<Character, Pair<Boolean, Pair<String, Integer>>> getMap() {
+    Map<Character, MidiNoteInfo> getMap() {
         return mapa;
     }
 
-    public void addNewComp(String path) {
-        comparr.add(new Composition(path));
+    public void loadComp(String path) {
+        comp = new Composition(path);
     }
 
-    public ArrayList<Composition> getCompArr() {
-        return comparr;
+    public Composition getComp() {
+        return comp;
     }
 
     public void loadmap(String path) {
@@ -81,7 +92,7 @@ public class Piano extends JPanel implements KeyListener {
             while ((text = reader.readLine()) != null) {
                 // ubaci u mapu taj line csv
                 String[] vals = text.split(",");
-                mapa.put(vals[0].charAt(0), new Pair<Boolean, Pair<String, Integer>>(false,new Pair<String, Integer>(vals[1], Integer.parseInt(vals[2]))));
+                mapa.put(vals[0].charAt(0), new MidiNoteInfo(vals[1], Integer.parseInt(vals[2])));
             }
         } catch (IOException e) {
             System.out.println(e);
@@ -97,40 +108,37 @@ public class Piano extends JPanel implements KeyListener {
 
     }
 
-    public void play(final int note) {
-        channel.noteOn(note, 50);
+    public void play(MidiNoteInfo m) {
+        channel.noteOn(m.midival, DEFAULT_VELOCITY);
+        m.t_start = System.currentTimeMillis();
+        m.isplaying = true;
     }
 
-    public void release(final int note) {
-        channel.noteOff(note, 50);
-    }
-
-    public void play(final int note, final long length) throws InterruptedException {
-        play(note);
-        Thread.sleep(length);
-        release(note);
+    public void release(MidiNoteInfo m) {
+        channel.noteOff(m.midival, DEFAULT_VELOCITY);
+        m.isplaying = false;
+        //logika pomeranja udesno composicije
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        //wont play
+        //nista
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        Pair<String, Integer> p = mapa.get(e.getKeyChar()).getSecond();
+        MidiNoteInfo p = mapa.get(e.getKeyChar());
         if (p != null ){
-            if(!(mapa.get(e.getKeyChar()).getFirst())) play(p.getSecond());
-            mapa.get(e.getKeyChar()).setFirst(true);
+            if(!p.isplaying) play(p);
+            p.isplaying = true;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        Pair<String, Integer> p = mapa.get(e.getKeyChar()).getSecond();
+        MidiNoteInfo p = mapa.get(e.getKeyChar());
         if (p != null){
-            mapa.get(e.getKeyChar()).setFirst(false);
-            release(p.getSecond());
+            release(p);
         }
     }
 
