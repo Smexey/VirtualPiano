@@ -5,8 +5,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +15,7 @@ import piano.Piano;
 /**
  * Keyboard
  */
-public class Keyboard extends JPanel implements MouseListener, KeyListener {
+public class Keyboard extends JPanel implements KeyListener {
     private static final long serialVersionUID = 1L;
     private static final int NUMOFWHITEKEYS = 5 * 7;
 
@@ -33,6 +31,7 @@ public class Keyboard extends JPanel implements MouseListener, KeyListener {
     public Keyboard(Piano myp) {
         setPreferredSize(new Dimension(800, 200));
         piano = myp;
+        addMouseListener(new KeyMouseListener());
     }
 
     private Map<Character, Boolean> ischarred = new HashMap<>();
@@ -107,7 +106,6 @@ public class Keyboard extends JPanel implements MouseListener, KeyListener {
                 }
             }
         }
-
     }
 
     public void setLabels(boolean flag) {
@@ -117,38 +115,40 @@ public class Keyboard extends JPanel implements MouseListener, KeyListener {
 
     private Character currplayedchar;
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-        int mousex = e.getX() - 7;// sta koji kurac??
-        double keywidth = getWidth() / (double) NUMOFWHITEKEYS;
-        int ind = (int) (((double) mousex / (double) keywidth));
+    private class KeyMouseListener implements MouseListener {
 
-        currplayedchar = keychars[ind];
-        piano.play(currplayedchar);
-    }
+        @Override
+        public void mousePressed(MouseEvent e) {
+            int mousex = e.getX();// sta koji kurac??
+            System.out.println(e.getY());
+            if (e.getY() < 0)
+                return;
+            double keywidth = getWidth() / (double) NUMOFWHITEKEYS;
+            int ind = (int) (((double) mousex / (double) keywidth));
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        int mousex = e.getX() - 7;// sta koji kurac??
-        double keywidth = getWidth() / (double) NUMOFWHITEKEYS;
-        int ind = (int) (((double) mousex / (double) keywidth));
+            currplayedchar = keychars[ind];
+            piano.play(currplayedchar);
+        }
 
-        piano.release(currplayedchar);
-        currplayedchar = null;
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-        if (currplayedchar != null)
+        @Override
+        public void mouseReleased(MouseEvent e) {
             piano.release(currplayedchar);
+            currplayedchar = null;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (currplayedchar != null)
+                piano.release(currplayedchar);
+        }
     }
 
     @Override

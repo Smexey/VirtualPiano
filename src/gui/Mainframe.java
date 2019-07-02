@@ -43,7 +43,6 @@ public class Mainframe extends JFrame {
         add(piano, BorderLayout.CENTER);
 
         add(keyboard, BorderLayout.SOUTH);
-        addMouseListener(keyboard);
         addKeyListener(keyboard);
 
         addWindowListener(new WindowAdapter() {
