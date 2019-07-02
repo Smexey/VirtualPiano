@@ -50,6 +50,7 @@ public class Composition extends JPanel {
 
     public void printStrings(boolean f) {
         symbolstringprint = f;
+        repaint();
     }
 
     public Composition(String path) {
@@ -158,6 +159,9 @@ public class Composition extends JPanel {
                 g.fillRect((int) x, (int) y, (int) (dur.getEightNum() * eightwidth), (int) symheight);
                 Note sym = (Note) symbol;
                 g.setColor(Color.black);
+                System.out.println(mypiano);
+                System.out.println("chartostr "+mypiano.mapChartoStr(sym.getC()));
+
                 g.drawString((symbolstringprint?mypiano.mapChartoStr(sym.getC()):Character.toString(sym.getC())), (int)(x+dur.getEightNum()*eightwidth/2.0),(int) (y+symheight/2.0));
             } else if (symbol instanceof Pause) {
                 g.setColor(dur.equals(MusicSymbol.Duration.EIGHT) ? EIGHTPAUSECOLOR : QUARTPAUSECOLOR);

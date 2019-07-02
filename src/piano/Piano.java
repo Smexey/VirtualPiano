@@ -66,6 +66,7 @@ public class Piano extends JPanel {
         player.reset();
         remove(comp);
         comp = new Composition();
+        comp.printStrings(compstrings);
         add(comp);
         comp.setPiano(this);
         
@@ -95,7 +96,8 @@ public class Piano extends JPanel {
     private Player player = new Player();
 
     public String mapChartoStr(char c) {
-        MidiNoteInfo s;
+        MidiNoteInfo s = mapa.get(c);
+        System.out.println(s);
         if ((s = mapa.get(c)) != null)
             return s.name;
         return null;
@@ -136,12 +138,15 @@ public class Piano extends JPanel {
         if (comp != null)
             remove(comp);
         comp = new Composition(path);
+        comp.setPiano(this);
         add(comp);
     }
 
     public Composition getComp() {
         return comp;
     }
+
+    
 
     public void loadmap(String path) {
         mapa = new HashMap<>();
@@ -208,6 +213,12 @@ public class Piano extends JPanel {
         channel.noteOff(m.midival, DEFAULT_VELOCITY);
         m.isplaying = false;
         // logika pomeranja udesno composicije
+    }
+
+    private boolean compstrings = false;
+    public void setCompStrings(boolean b){
+        compstrings = b;
+        comp.printStrings(compstrings);
     }
 
     public void stop() {

@@ -24,7 +24,7 @@ public class Keyboard extends JPanel implements MouseListener, KeyListener {
     private static final char[] keychars = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'q', 'w', 'e', 'r', 't',
             'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm' };
 
-    private static final char[] digittospecial = {'!','@','#','$','%','^','&','*','(',')'};
+    private static final char[] digittospecial = { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')' };
 
     private boolean labelsflag = true;
 
@@ -38,9 +38,9 @@ public class Keyboard extends JPanel implements MouseListener, KeyListener {
     private Map<Character, Boolean> ischarred = new HashMap<>();
 
     public void press(char c) {
-        if(ischarred.get(c)!=null){
+        if (ischarred.get(c) != null) {
             ischarred.replace(c, true);
-        }else{
+        } else {
             ischarred.put(c, true);
         }
         repaint();
@@ -91,11 +91,10 @@ public class Keyboard extends JPanel implements MouseListener, KeyListener {
                 if (labelsflag) {
                     g.setColor(Color.white);
                     char c = keychars[i];
-                    if(Character.isDigit(c)){
-                        c = digittospecial[Character.getNumericValue(c)-1];
-                        System.out.println("is digit");
-                    }else{
-                        c= Character.toUpperCase(c);
+                    if (Character.isDigit(c)) {
+                        c = digittospecial[Character.getNumericValue(c) - 1];
+                    } else {
+                        c = Character.toUpperCase(c);
                     }
                     Boolean b = ischarred.get(c);
                     if (b != null) {
@@ -116,39 +115,40 @@ public class Keyboard extends JPanel implements MouseListener, KeyListener {
         repaint();
     }
 
+    private Character currplayedchar;
+
     @Override
     public void mousePressed(MouseEvent e) {
-        System.out.println("pressed at" + e.getX());
+        int mousex = e.getX() - 7;// sta koji kurac??
+        double keywidth = getWidth() / (double) NUMOFWHITEKEYS;
+        int ind = (int) (((double) mousex / (double) keywidth));
+
+        currplayedchar = keychars[ind];
+        piano.play(currplayedchar);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        int mousex = e.getX() - 7;// sta koji kurac??
+        double keywidth = getWidth() / (double) NUMOFWHITEKEYS;
+        int ind = (int) (((double) mousex / (double) keywidth));
 
+        piano.release(currplayedchar);
+        currplayedchar = null;
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        double keywidth = getWidth() / (double) NUMOFWHITEKEYS;
-        int ind = (int) ((e.getX() / keywidth));
-        System.out.println("mousex at: " + e.getX());
-        System.out.println(ind);
-        piano.play(keychars[ind]);
-        try {
-            Thread.sleep(150);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }
-        piano.release(keychars[ind]);
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        // nista
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        // nista
+        if (currplayedchar != null)
+            piano.release(currplayedchar);
     }
 
     @Override

@@ -115,11 +115,17 @@ public class Mainframe extends JFrame {
         menubar.add(options);
 
         options = new JMenu("Options");
-        JCheckBoxMenuItem chkboxmenuitem = new JCheckBoxMenuItem("Show notes",true);
+        JCheckBoxMenuItem chkboxmenuitem = new JCheckBoxMenuItem("Show keyboard help",true);
         chkboxmenuitem.addActionListener(e->{
             keyboard.setLabels(chkboxmenuitem.getState());
         });
         options.add(chkboxmenuitem);
+
+        JCheckBoxMenuItem chkboxmenuitem2 = new JCheckBoxMenuItem("Show notes",false);
+        chkboxmenuitem2.addActionListener(e->{
+            piano.setCompStrings(chkboxmenuitem2.getState());
+        });
+        options.add(chkboxmenuitem2);
 
         menubar.add(options);
     }
