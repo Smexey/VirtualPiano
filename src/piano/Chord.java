@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Chord
  */
 public class Chord extends MusicSymbol {
-    private ArrayList<Character> arr;
+    public ArrayList<Character> arr;
 
     public Chord(Duration dd,ArrayList<Character> arrr){
         super(dd);
@@ -26,4 +26,5 @@ public class Chord extends MusicSymbol {
 
         return s.toString();
     }
+
 }

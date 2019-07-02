@@ -4,7 +4,7 @@ package piano;
 /**
  * MusicSymbol
  */
-public class MusicSymbol {
+public abstract class MusicSymbol {
 
     private Duration d;
 
@@ -14,7 +14,7 @@ public class MusicSymbol {
         private Duration(int number) {
             this.number = number;
         }
-        public int getQuarterNum() {
+        public int getEightNum() {
             return number;
         }
     }
@@ -31,5 +31,6 @@ public class MusicSymbol {
     public String toString() {
         return d.name();
     }
+
 
 }
