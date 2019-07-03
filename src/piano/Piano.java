@@ -10,6 +10,7 @@ import javax.sound.midi.Synthesizer;
 import javax.swing.JPanel;
 
 import gui.Keyboard;
+import piano.MusicSymbol.Duration;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -26,6 +27,7 @@ public class Piano extends JPanel {
     public static final int DEFAULT_INSTRUMENT = 1;
     public static final String DEFAULT_MAP_PATH = "map.csv";
     public static final int DEFAULT_VELOCITY = 60;
+    private static final long EIGHTPLAYTIME = 1000 / 8;
 
     private Keyboard keyboard;
 
@@ -65,16 +67,8 @@ public class Piano extends JPanel {
 
     private void swaptorecord() {
         player.reset();
-
-        remove(comp);
-        comp = new Composition();
-        comp.printStrings(compstrings);
-        add(comp);
-        comp.setPiano(this);
-
         mode = Modes.RECORD;
-        revalidate();
-        repaint();
+
     }
 
     private static class MidiNoteInfo {
@@ -201,12 +195,16 @@ public class Piano extends JPanel {
         MidiNoteInfo p = mapa.get(c);
         if (p != null) {
             release(p);
+            if (mode.equals(Modes.RECORD)) {
+                recordnote(c,p);
+            }
         }
     }
 
     private void play(MidiNoteInfo m) {
         channel.noteOn(m.midival, DEFAULT_VELOCITY);
-
+        m.t_start = System.currentTimeMillis();
+        m.isplaying = true;
         if (mode.equals(Modes.GAME))
             game.play(m);
     }
@@ -217,6 +215,8 @@ public class Piano extends JPanel {
         // logika pomeranja udesno composicije
         if (mode.equals(Modes.GAME))
             game.release(m);
+
+
     }
 
     private boolean compstrings = false;
@@ -249,21 +249,83 @@ public class Piano extends JPanel {
         player.reset();
     }
 
+    /////////////////////// RECORD///////////////////////////
+
+    private boolean recording = true;
+    private long lastt = 0;// krece od nule
+
+    public void startrecord() {
+        if (!mode.equals(Modes.RECORD))
+            return;
+
+        remove(comp);
+        comp = new Composition();
+        comp.printStrings(compstrings);
+        add(comp);
+        comp.setPiano(this);
+        revalidate();
+        repaint();
+        recording = true;
+    }
+
+    public void endrecord() {
+        if (!mode.equals(Modes.RECORD))
+            return;
+        if (recording != true)
+            return;
+
+        lastt = 0;
+        recording = false;
+        comp.save();
+    }
+
+    private void recordnote(char c,MidiNoteInfo m) {
+        
+        if (lastt != 0) {
+            // dodaj pauze
+            long t = System.currentTimeMillis() - lastt;
+            long n = t / EIGHTPLAYTIME;
+            n /= 2;
+            for (int i = 0; i < n; i++) {
+                // dodaj cetvrtine
+                comp.insert(new Pause(Duration.QUART));
+            }
+            if (n % 2 == 1) {
+                comp.insert(new Pause(Duration.EIGHT));
+            }
+        }
+        // dodaj notu
+        long t = System.currentTimeMillis() - m.t_start;
+        long n = t / EIGHTPLAYTIME;
+        System.out.println("inserting:"+c+" "+ t);
+        n /= 2;
+        System.out.println("forn "+n);
+        for (int i = 0; i < n; i++) {
+            // dodaj cetvrtine
+            System.out.println("inserting quart");
+            comp.insert(new Note(c,Duration.QUART));
+        }
+        if (n % 2 == 1) {
+            System.out.println("inserting eight");
+            comp.insert(new Note(c,Duration.EIGHT));
+        }
+        comp.repaint();
+        lastt = System.currentTimeMillis();
+    }
+
     private class Game {
         private MusicSymbol currsym;
         private static final double ERRORPERCENT = 0.8;// +- delta
-        private static final long EIGHTPLAYTIME = 1000 / 8;
 
         public void play(MidiNoteInfo m) {
-            m.t_start = System.currentTimeMillis();
-            m.isplaying = true;
+            
         }
 
         public void release(MidiNoteInfo m) {
             m.isplaying = false;
             if (currsym instanceof Note) {
                 Note sym = (Note) currsym;
-                if(checkchar(sym.getC(), m)){
+                if (checkchar(sym.getC(), m)) {
                     comp.movebyone();
                     getnextsym();
                 }
@@ -273,12 +335,12 @@ public class Piano extends JPanel {
                 boolean flag = true;
                 for (char c : sym.arr) {
                     MidiNoteInfo inf = mapa.get(c);
-                    if(!checkchar(c, inf)){
+                    if (!checkchar(c, inf)) {
                         flag = false;
                         break;
                     }
                 }
-                if(flag){
+                if (flag) {
                     comp.movebyone();
                     getnextsym();
                 }
@@ -308,7 +370,7 @@ public class Piano extends JPanel {
             }
         }
 
-        private boolean checkchar(char c,MidiNoteInfo m) {
+        private boolean checkchar(char c, MidiNoteInfo m) {
             String name = mapChartoStr(c);
             if (m.name.equals(name)) {
                 long t = System.currentTimeMillis() - m.t_start;
@@ -328,8 +390,6 @@ public class Piano extends JPanel {
 
         private boolean working = false;
         private boolean paused = false;
-        private static final int COEFFICIENT = 1;
-        private static final long EIGHTPLAYTIME = 1000 / 8 * COEFFICIENT;
 
         public Player() {
         }

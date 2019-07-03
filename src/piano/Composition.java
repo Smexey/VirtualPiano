@@ -44,6 +44,11 @@ public class Composition extends JPanel {
         repaint();
     }
 
+    synchronized public void save(){
+        mainpart = new ArrayList<>(part);
+        repaint();
+    }
+
     synchronized public ArrayList<MusicSymbol> getPartCopy(){
         return new ArrayList<MusicSymbol>(part);
     }
@@ -85,6 +90,11 @@ public class Composition extends JPanel {
         }
         // ubacivanje nota u arraylist
         makepart(allMatches);
+    }
+
+    synchronized public void insert(MusicSymbol m){
+        part.add(m);
+        sumdura += m.getDur().getEightNum();
     }
 
     synchronized public void insert(String str) {

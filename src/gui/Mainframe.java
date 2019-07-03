@@ -100,7 +100,6 @@ public class Mainframe extends JFrame {
         options.add(menucheck);
 
         menucheck.addActionListener(e->{
-            System.out.println("swapping to game");
             piano.setmode(Piano.Modes.GAME);
         });
 
@@ -126,6 +125,21 @@ public class Mainframe extends JFrame {
             piano.setCompStrings(chkboxmenuitem2.getState());
         });
         options.add(chkboxmenuitem2);
+
+        menubar.add(options);
+
+        options = new JMenu("Record");
+        menuitem = new JMenuItem("Start");
+        menuitem.addActionListener(e->{
+            piano.startrecord();
+        });
+        options.add(menuitem);
+
+        menuitem = new JMenuItem("End");
+        menuitem.addActionListener(e->{
+            piano.endrecord();
+        });
+        options.add(menuitem);
 
         menubar.add(options);
     }
