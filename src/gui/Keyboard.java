@@ -120,7 +120,6 @@ public class Keyboard extends JPanel implements KeyListener {
         @Override
         public void mousePressed(MouseEvent e) {
             int mousex = e.getX();// sta koji kurac??
-            System.out.println(e.getY());
             if (e.getY() < 0)
                 return;
             double keywidth = getWidth() / (double) NUMOFWHITEKEYS;

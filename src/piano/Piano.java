@@ -30,7 +30,7 @@ public class Piano extends JPanel {
     private Keyboard keyboard;
 
     public static enum Modes {
-        GAME, AUTOPLAY,RECORD;
+        GAME, AUTOPLAY, RECORD;
     }
 
     private Modes mode = Modes.AUTOPLAY;
@@ -41,20 +41,21 @@ public class Piano extends JPanel {
 
         if (m.equals(Modes.GAME)) {
             swaptogame();
-        } else if(m.equals(Modes.AUTOPLAY)) {
+        } else if (m.equals(Modes.AUTOPLAY)) {
             swaptoautoplay();
-        }else{
+        } else {
             swaptorecord();
         }
     }
 
-    public void setkeyboard(Keyboard k){
+    public void setkeyboard(Keyboard k) {
         keyboard = k;
     }
 
     private void swaptogame() {
         player.reset();
         mode = Modes.GAME;
+        game.reset();
     }
 
     private void swaptoautoplay() {
@@ -64,12 +65,13 @@ public class Piano extends JPanel {
 
     private void swaptorecord() {
         player.reset();
+
         remove(comp);
         comp = new Composition();
         comp.printStrings(compstrings);
         add(comp);
         comp.setPiano(this);
-        
+
         mode = Modes.RECORD;
         revalidate();
         repaint();
@@ -94,10 +96,10 @@ public class Piano extends JPanel {
     private MidiChannel channel;
 
     private Player player = new Player();
+    private Game game;
 
     public String mapChartoStr(char c) {
         MidiNoteInfo s = mapa.get(c);
-        System.out.println(s);
         if ((s = mapa.get(c)) != null)
             return s.name;
         return null;
@@ -107,6 +109,7 @@ public class Piano extends JPanel {
         setBackground(Color.cyan);
         channel = getChannel(instrument);
         setLayout(new GridLayout(0, 1));
+        game = new Game();
         player.start();
     }
 
@@ -145,8 +148,6 @@ public class Piano extends JPanel {
     public Composition getComp() {
         return comp;
     }
-
-    
 
     public void loadmap(String path) {
         mapa = new HashMap<>();
@@ -205,18 +206,22 @@ public class Piano extends JPanel {
 
     private void play(MidiNoteInfo m) {
         channel.noteOn(m.midival, DEFAULT_VELOCITY);
-        m.t_start = System.currentTimeMillis();
-        m.isplaying = true;
+
+        if (mode.equals(Modes.GAME))
+            game.play(m);
     }
 
     private void release(MidiNoteInfo m) {
         channel.noteOff(m.midival, DEFAULT_VELOCITY);
         m.isplaying = false;
         // logika pomeranja udesno composicije
+        if (mode.equals(Modes.GAME))
+            game.release(m);
     }
 
     private boolean compstrings = false;
-    public void setCompStrings(boolean b){
+
+    public void setCompStrings(boolean b) {
         compstrings = b;
         comp.printStrings(compstrings);
     }
@@ -227,15 +232,96 @@ public class Piano extends JPanel {
     }
 
     synchronized public void pause() {
+        if (!mode.equals(Modes.AUTOPLAY))
+            return;
         player.pause();
     }
 
     synchronized public void unpause() {
+        if (!mode.equals(Modes.AUTOPLAY))
+            return;
         player.unpause();
     }
 
     synchronized public void reset() {
+        if (!mode.equals(Modes.AUTOPLAY))
+            return;
         player.reset();
+    }
+
+    private class Game {
+        private MusicSymbol currsym;
+        private static final double ERRORPERCENT = 0.8;// +- delta
+        private static final long EIGHTPLAYTIME = 1000 / 8;
+
+        public void play(MidiNoteInfo m) {
+            m.t_start = System.currentTimeMillis();
+            m.isplaying = true;
+        }
+
+        public void release(MidiNoteInfo m) {
+            m.isplaying = false;
+            if (currsym instanceof Note) {
+                Note sym = (Note) currsym;
+                if(checkchar(sym.getC(), m)){
+                    comp.movebyone();
+                    getnextsym();
+                }
+
+            } else if (currsym instanceof Chord) {
+                Chord sym = (Chord) currsym;
+                boolean flag = true;
+                for (char c : sym.arr) {
+                    MidiNoteInfo inf = mapa.get(c);
+                    if(!checkchar(c, inf)){
+                        flag = false;
+                        break;
+                    }
+                }
+                if(flag){
+                    comp.movebyone();
+                    getnextsym();
+                }
+            }
+        }
+
+        public void reset() {
+            comp.reset();
+            getnextsym();
+        }
+
+        private void getnextsym() {
+            while (true) {
+                MusicSymbol s = comp.getfirst();
+                if (s == null) {
+                    comp.reset();
+                    currsym = comp.getfirst();
+                    break;
+                } else {
+                    if (!(s instanceof Pause)) {
+                        currsym = comp.getfirst();
+                        break;
+                    }
+                    // ako je pauza ide ispocetka
+                    comp.movebyone();
+                }
+            }
+        }
+
+        private boolean checkchar(char c,MidiNoteInfo m) {
+            String name = mapChartoStr(c);
+            if (m.name.equals(name)) {
+                long t = System.currentTimeMillis() - m.t_start;
+                long dur = currsym.getDur().getEightNum() * EIGHTPLAYTIME;
+
+                if (t > (dur - dur * ERRORPERCENT) && t < (dur + dur * ERRORPERCENT)) {
+                    // onda je u opsegu
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
 
     private class Player extends Thread {
@@ -264,24 +350,24 @@ public class Piano extends JPanel {
                             while (paused) {
                                 wait();
                             }
-                            if (!working){
+                            if (!working) {
                                 break;
                             }
-                            
+
                         }
 
                         if (sym instanceof Chord) {
                             Chord chord = (Chord) sym;
                             for (char c : chord.arr) {
                                 channel.noteOn(mapa.get(c).midival, DEFAULT_VELOCITY);
-                                if(keyboard!=null){
+                                if (keyboard != null) {
                                     keyboard.press(c);
                                 }
                             }
                             sleep(sym.getDur().getEightNum() * EIGHTPLAYTIME);
                             for (char c : chord.arr) {
                                 channel.noteOff(mapa.get(c).midival, DEFAULT_VELOCITY);
-                                if(keyboard!=null){
+                                if (keyboard != null) {
                                     keyboard.release(c);
                                 }
                             }
@@ -290,18 +376,18 @@ public class Piano extends JPanel {
                         } else {
                             Note note = (Note) sym;
                             channel.noteOn(mapa.get(note.getC()).midival, DEFAULT_VELOCITY);
-                            if(keyboard!=null){
+                            if (keyboard != null) {
                                 keyboard.press(note.getC());
                             }
                             sleep(sym.getDur().getEightNum() * EIGHTPLAYTIME);
                             channel.noteOff(mapa.get(note.getC()).midival, DEFAULT_VELOCITY);
-                            if(keyboard!=null){
+                            if (keyboard != null) {
                                 keyboard.release(note.getC());
                             }
                         }
 
                         synchronized (this) {
-                            if(working) {
+                            if (working) {
                                 comp.movebyone();
                             }
                         }
@@ -345,6 +431,7 @@ public class Piano extends JPanel {
             unpause();
             comp.reset();
         }
+
         @Override
         public void interrupt() {
             working = false;

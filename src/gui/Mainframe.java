@@ -38,7 +38,7 @@ public class Mainframe extends JFrame {
         piano.setkeyboard(keyboard);
 
         piano.loadmap(Piano.DEFAULT_MAP_PATH);
-        piano.loadComp("C:\\Users\\Pyo\\Desktop\\VirtualPiano\\input\\fur_elise.txt");
+        piano.loadComp("C:\\Users\\Pyo\\Desktop\\VirtualPiano\\input\\test.txt");
 
         add(piano, BorderLayout.CENTER);
 
@@ -100,6 +100,7 @@ public class Mainframe extends JFrame {
         options.add(menucheck);
 
         menucheck.addActionListener(e->{
+            System.out.println("swapping to game");
             piano.setmode(Piano.Modes.GAME);
         });
 
