@@ -17,12 +17,10 @@ public class Chord extends MusicSymbol {
     public String toString() {
         
         StringBuilder s = new StringBuilder();
-        s.append("Chord: ");
-        for (var x : arr) {
-            s.append(x);
-            s.append(" ");
-        }
-        s.append(super.toString());
+        s.append("[");
+
+        arr.stream().forEach(x->s.append(x));
+        s.append("]");
 
         return s.toString();
     }

@@ -31,8 +31,6 @@ public class Mainframe extends JFrame {
         setSize(new Dimension(300, 200));
         setLayout(new BorderLayout());
 
-        
-        
         piano = new Piano();
         keyboard = new Keyboard(piano);
         piano.setkeyboard(keyboard);
@@ -142,6 +140,24 @@ public class Mainframe extends JFrame {
         options.add(menuitem);
 
         menubar.add(options);
+
+
+        
+        options = new JMenu("Save");
+        menuitem = new JMenuItem("Midi");
+        menuitem.addActionListener(e->{
+            piano.savetomidi();
+        });
+        options.add(menuitem);
+
+        menuitem = new JMenuItem("Text");
+        menuitem.addActionListener(e->{
+            piano.savetotxt();
+        });
+        options.add(menuitem);
+
+        menubar.add(options);
+
     }
 
 

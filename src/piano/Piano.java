@@ -27,7 +27,7 @@ public class Piano extends JPanel {
     public static final int DEFAULT_INSTRUMENT = 1;
     public static final String DEFAULT_MAP_PATH = "map.csv";
     public static final int DEFAULT_VELOCITY = 60;
-    private static final long EIGHTPLAYTIME = 1000 / 8;
+    protected static final long EIGHTPLAYTIME = 1000 / 8;
 
     private Keyboard keyboard;
 
@@ -71,11 +71,11 @@ public class Piano extends JPanel {
 
     }
 
-    private static class MidiNoteInfo {
-        private boolean isplaying = false;
-        private String name;
-        private int midival;
-        private long t_start;
+    protected static class MidiNoteInfo {
+        boolean isplaying = false;
+        String name;
+        int midival;
+        long t_start;
 
         public MidiNoteInfo(String n, int midivall) {
             midival = midivall;
@@ -84,7 +84,7 @@ public class Piano extends JPanel {
 
     }
 
-    private Map<Character, MidiNoteInfo> mapa;
+    protected Map<Character, MidiNoteInfo> mapa;
     private Composition comp;
 
     private MidiChannel channel;
@@ -196,7 +196,7 @@ public class Piano extends JPanel {
         if (p != null) {
             release(p);
             if (mode.equals(Modes.RECORD)) {
-                recordnote(c,p);
+                recordnote(c, p);
             }
         }
     }
@@ -215,7 +215,6 @@ public class Piano extends JPanel {
         // logika pomeranja udesno composicije
         if (mode.equals(Modes.GAME))
             game.release(m);
-
 
     }
 
@@ -279,8 +278,10 @@ public class Piano extends JPanel {
         comp.save();
     }
 
-    private void recordnote(char c,MidiNoteInfo m) {
-        
+    private void recordnote(char c, MidiNoteInfo m) {
+        // if (System.currentTimeMillis() - m.t_start < EIGHTPLAYTIME)
+        //     return;
+
         if (lastt != 0) {
             // dodaj pauze
             long t = System.currentTimeMillis() - lastt;
@@ -297,18 +298,13 @@ public class Piano extends JPanel {
         // dodaj notu
         long t = System.currentTimeMillis() - m.t_start;
         long n = t / EIGHTPLAYTIME;
-        System.out.println("inserting:"+c+" "+ t);
         n /= 2;
-        System.out.println("forn "+n);
         for (int i = 0; i < n; i++) {
             // dodaj cetvrtine
-            System.out.println("inserting quart");
-            comp.insert(new Note(c,Duration.QUART));
+            comp.insert(new Note(c, Duration.QUART));
         }
-        if (n % 2 == 1) {
-            System.out.println("inserting eight");
-            comp.insert(new Note(c,Duration.EIGHT));
-        }
+        //ubacuje svejedno osminu tako je fer
+        comp.insert(new Note(c, Duration.EIGHT));
         comp.repaint();
         lastt = System.currentTimeMillis();
     }
@@ -318,7 +314,7 @@ public class Piano extends JPanel {
         private static final double ERRORPERCENT = 0.8;// +- delta
 
         public void play(MidiNoteInfo m) {
-            
+
         }
 
         public void release(MidiNoteInfo m) {
@@ -499,5 +495,16 @@ public class Piano extends JPanel {
         }
 
     }
+
+    private Midi midifileformatter = new Midi();
+	public void savetomidi() {
+        midifileformatter.printto(comp, "output.midi");
+    }
+    
+    private Text textfileformatter = new Text();
+	public void savetotxt() {
+        textfileformatter.printto(comp, "output.txt");
+    }
+
 
 }

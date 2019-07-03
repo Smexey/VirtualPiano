@@ -25,7 +25,7 @@ public class Composition extends JPanel {
     private ArrayList<MusicSymbol> mainpart;
     private int sumdura = 0;
     private boolean symbolstringprint = false;
-    private Piano mypiano;
+    protected Piano mypiano;
 
     private static final Color QUARTNOTECOLOR = Color.red, QUARTPAUSECOLOR = new Color(128,0,0),
             EIGHTNOTECOLOR = new Color(127, 255, 0), EIGHTPAUSECOLOR = new Color(0,100,0);

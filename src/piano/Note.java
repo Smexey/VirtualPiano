@@ -12,14 +12,13 @@ public class Note extends MusicSymbol {
         c = cc;
     }
 
-    public char getC(){
+    public char getC() {
         return c;
     }
 
-
     @Override
     public String toString() {
-        return "Note: " + c +" "+super.toString();
+        return Character.toString(c);
     }
 
 }

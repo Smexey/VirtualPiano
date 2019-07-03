@@ -1,19 +1,17 @@
 package piano;
 
-
 /**
  * Pause
  */
 public class Pause extends MusicSymbol {
 
-
-    public Pause(Duration dd){
+    public Pause(Duration dd) {
         super(dd);
     }
 
     @Override
     public String toString() {
-        return "Pause: "+super.toString();
+        return (super.getDur().equals(MusicSymbol.Duration.EIGHT) ? " " : "|");
     }
-    
+
 }
