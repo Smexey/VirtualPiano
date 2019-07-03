@@ -111,7 +111,7 @@ public class Piano extends JPanel {
         add(comp);
         comp.setPiano(this);
         revalidate();
-    
+
         repaint();
     }
 
@@ -291,13 +291,13 @@ public class Piano extends JPanel {
     private void recordnote(char c, MidiNoteInfo m) {
         // if (System.currentTimeMillis() - m.t_start < EIGHTPLAYTIME)
         // return;
+        //logika za chordove?
 
         if (lastt != 0) {
             // dodaj pauze
             long t = System.currentTimeMillis() - lastt;
             long n = t / EIGHTPLAYTIME;
-            n /= 2;
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < n / 2; i++) {
                 // dodaj cetvrtine
                 comp.insert(new Pause(Duration.QUART));
             }
@@ -307,13 +307,14 @@ public class Piano extends JPanel {
         }
         // dodaj notu
         long t = System.currentTimeMillis() - m.t_start;
+
         long n = t / EIGHTPLAYTIME;
-        for (int i = 0; i <= n/2; i++) {
+        System.out.println(t + " " + n);
+        for (int i = 0; i < n / 2; i++) {
             // dodaj cetvrtine
             comp.insert(new Note(c, Duration.QUART));
         }
-        // ubacuje svejedno osminu tako je fer
-        if (n%2==1)
+        if (n % 2 == 1 || n==0)
             comp.insert(new Note(c, Duration.EIGHT));
         comp.repaint();
         lastt = System.currentTimeMillis();
