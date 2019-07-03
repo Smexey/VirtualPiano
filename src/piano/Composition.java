@@ -40,7 +40,7 @@ public class Composition extends JPanel {
     }
 
     synchronized public void reset(){
-        part = new ArrayList<>(mainpart);
+        if(mainpart!=null) part = new ArrayList<>(mainpart);
         repaint();
     }
 

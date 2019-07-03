@@ -60,6 +60,9 @@ public class Mainframe extends JFrame {
                         piano.stop();
                         dispose();
                     }
+                } else {
+                    piano.stop();
+                    dispose();
                 }
 
             }
@@ -79,7 +82,8 @@ public class Mainframe extends JFrame {
         menuitem.addActionListener(e -> {
             saved = false;
             String path = JOptionPane.showInputDialog(this, "Please enter composition file path");
-            if(path!=null) piano.loadComp(path);
+            if (path != null)
+                piano.loadComp(path);
         });
         options.add(menuitem);
 
