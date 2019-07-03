@@ -127,10 +127,12 @@ public class Keyboard extends JPanel implements KeyListener {
 
             currplayedchar = keychars[ind];
             piano.play(currplayedchar);
+            press(currplayedchar);
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
+            release(currplayedchar);
             piano.release(currplayedchar);
             currplayedchar = null;
         }
@@ -145,8 +147,11 @@ public class Keyboard extends JPanel implements KeyListener {
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if (currplayedchar != null)
+            if (currplayedchar != null) {
+                release(currplayedchar);
                 piano.release(currplayedchar);
+            }
+
         }
     }
 

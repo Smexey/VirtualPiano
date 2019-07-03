@@ -105,6 +105,14 @@ public class Piano extends JPanel {
         setLayout(new GridLayout(0, 1));
         game = new Game();
         player.start();
+
+        comp = new Composition();
+        comp.printStrings(compstrings);
+        add(comp);
+        comp.setPiano(this);
+        revalidate();
+    
+        repaint();
     }
 
     public Piano() throws MidiUnavailableException {
@@ -137,6 +145,8 @@ public class Piano extends JPanel {
         comp = new Composition(path);
         comp.setPiano(this);
         add(comp);
+        revalidate();
+        repaint();
     }
 
     public Composition getComp() {
@@ -498,14 +508,14 @@ public class Piano extends JPanel {
 
     private Midi midifileformatter = new Midi();
 
-    public void savetomidi() {
-        midifileformatter.printto(comp, "output.midi");
+    public void savetomidi(String name) {
+        midifileformatter.printto(comp, name);
     }
 
     private Text textfileformatter = new Text();
 
-    public void savetotxt() {
-        textfileformatter.printto(comp, "output.txt");
+    public void savetotxt(String name) {
+        textfileformatter.printto(comp, name);
     }
 
 }
