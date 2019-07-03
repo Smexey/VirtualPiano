@@ -37,7 +37,7 @@ public class Mainframe extends JFrame {
 
         piano.loadmap(Piano.DEFAULT_MAP_PATH);
         piano.loadComp("C:\\Users\\Pyo\\Desktop\\VirtualPiano\\input\\test.txt");
-
+        // piano.loadComp("output.txt");
         add(piano, BorderLayout.CENTER);
 
         add(keyboard, BorderLayout.SOUTH);

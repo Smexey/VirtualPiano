@@ -280,7 +280,7 @@ public class Piano extends JPanel {
 
     private void recordnote(char c, MidiNoteInfo m) {
         // if (System.currentTimeMillis() - m.t_start < EIGHTPLAYTIME)
-        //     return;
+        // return;
 
         if (lastt != 0) {
             // dodaj pauze
@@ -298,13 +298,13 @@ public class Piano extends JPanel {
         // dodaj notu
         long t = System.currentTimeMillis() - m.t_start;
         long n = t / EIGHTPLAYTIME;
-        n /= 2;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i <= n/2; i++) {
             // dodaj cetvrtine
             comp.insert(new Note(c, Duration.QUART));
         }
-        //ubacuje svejedno osminu tako je fer
-        comp.insert(new Note(c, Duration.EIGHT));
+        // ubacuje svejedno osminu tako je fer
+        if (n%2==1)
+            comp.insert(new Note(c, Duration.EIGHT));
         comp.repaint();
         lastt = System.currentTimeMillis();
     }
@@ -497,14 +497,15 @@ public class Piano extends JPanel {
     }
 
     private Midi midifileformatter = new Midi();
-	public void savetomidi() {
+
+    public void savetomidi() {
         midifileformatter.printto(comp, "output.midi");
     }
-    
+
     private Text textfileformatter = new Text();
-	public void savetotxt() {
+
+    public void savetotxt() {
         textfileformatter.printto(comp, "output.txt");
     }
-
 
 }

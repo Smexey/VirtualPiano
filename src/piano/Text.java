@@ -20,11 +20,11 @@ public class Text implements FileFormatter {
             ArrayList<MusicSymbol> red = comp.getPartCopy();
             red.stream().forEach(l -> {
                 try {
-                    if (openedeightnotesection)
-                        writer.append(' ');
-                        
+
                     if (l instanceof Note && l.getDur().equals(MusicSymbol.Duration.EIGHT)) {
                         // pise quick note
+                        if (openedeightnotesection)
+                            writer.append(' ');
                         if (!openedeightnotesection) {
                             writer.append('[');
                             openedeightnotesection = true;
@@ -34,7 +34,7 @@ public class Text implements FileFormatter {
                         writer.append(']');
                         openedeightnotesection = false;
                     }
-                    
+
                     writer.append(l.toString());
 
                 } catch (IOException e) {
