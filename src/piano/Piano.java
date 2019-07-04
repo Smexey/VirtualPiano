@@ -262,6 +262,7 @@ public class Piano extends JPanel {
 
     private boolean recording = true;
     private long lastt = 0;// krece od nule
+    private long lastt_start = 0;
 
     synchronized public void startrecord() {
         if (!mode.equals(Modes.RECORD))
@@ -302,15 +303,16 @@ public class Piano extends JPanel {
                 comp.insert(new Pause(Duration.EIGHT));
             }
 
-            if (n == 0 && (System.currentTimeMillis() - m.t_start) / EIGHTPLAYTIME == 2) {
-                // chord logika
-                comp.insertlastchord(new Note(c, Duration.QUART));
-            }
         }
         // dodaj notu
         long t = System.currentTimeMillis() - m.t_start;
 
         long n = t / EIGHTPLAYTIME;
+        if ((m.t_start - lastt_start) / (2*EIGHTPLAYTIME) == 0 && n ==2) {
+            // chord logika
+            comp.insertlastchord(new Note(c, Duration.QUART));
+            n-=2;
+        }
         for (int i = 0; i < n / 2; i++) {
             // dodaj cetvrtine
             comp.insert(new Note(c, Duration.QUART));
@@ -318,7 +320,11 @@ public class Piano extends JPanel {
         if (n % 2 == 1 || n == 0)
             comp.insert(new Note(c, Duration.EIGHT));
 
+
+        
+
         comp.repaint();
+        lastt_start = m.t_start;
         lastt = System.currentTimeMillis();
     }
 
