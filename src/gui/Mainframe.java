@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.nio.charset.CharsetEncoder;
 
 import javax.sound.midi.MidiUnavailableException;
 import javax.swing.ButtonGroup;
@@ -28,8 +29,10 @@ public class Mainframe extends JFrame {
     private boolean saved = false;
     private Piano piano;
 
+
     public Mainframe(String name) throws MidiUnavailableException {
         super(name);
+        
         setSize(new Dimension(300, 200));
         setLayout(new BorderLayout());
 
@@ -44,6 +47,7 @@ public class Mainframe extends JFrame {
         // C:\\Users\\Pyo\\Desktop\\VirtualPiano\\input\\fur_elise.txt
 
         add(piano, BorderLayout.CENTER);
+        
 
         add(keyboard, BorderLayout.SOUTH);
         addKeyListener(keyboard);

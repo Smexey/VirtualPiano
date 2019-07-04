@@ -143,6 +143,23 @@ public class Composition extends JPanel {
         repaint();
     }
 
+    synchronized public void insertlastchord(Note n){
+        MusicSymbol sym;
+        if((sym = part.get(part.size()-1)) instanceof Chord){
+            Chord c = (Chord) sym;
+            c.arr.add(n.getC());
+
+        }else if((sym = part.get(part.size()-1)) instanceof Note){
+            ArrayList<Character> arr =  new ArrayList<>();
+            arr.add(((Note)sym).getC());
+            arr.add(n.getC());
+            Chord c = new Chord(MusicSymbol.Duration.QUART, arr);
+            
+            part.remove(part.size()-1);
+            part.add(c);
+        }
+    }
+
     synchronized private void makepart(List<String> allMatches) {
         for (String str : allMatches) {
             insert(str);
@@ -208,8 +225,5 @@ public class Composition extends JPanel {
         }
     }
 
-    public static void main(String[] args) {
-        new Composition("C:\\Users\\Pyo\\Desktop\\VirtualPiano\\input\\test.txt");
-    }
 
 }

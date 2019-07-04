@@ -181,18 +181,16 @@ public class Piano extends JPanel {
     }
 
     public void playcomp() {
+        if (!mode.equals(Modes.AUTOPLAY))
+            return;
         player.playcomp();
     }
 
     public void play(char c) {
-        handlepress(c);
+        press(c);
     }
 
-    public void release(char c) {
-        handlerelease(c);
-    }
-
-    public void handlepress(char c) {
+    public void press(char c) {
         MidiNoteInfo p = mapa.get(c);
         if (p != null) {
             if (!p.isplaying)
@@ -201,7 +199,7 @@ public class Piano extends JPanel {
         }
     }
 
-    public void handlerelease(char c) {
+    public void release(char c) {
         MidiNoteInfo p = mapa.get(c);
         if (p != null) {
             release(p);
@@ -235,7 +233,9 @@ public class Piano extends JPanel {
         comp.printStrings(compstrings);
     }
 
-    public void stop() {
+    synchronized public void stop() {
+        if (!mode.equals(Modes.AUTOPLAY))
+            return;
         channel.allNotesOff();
         player.interrupt();
     }
@@ -263,7 +263,7 @@ public class Piano extends JPanel {
     private boolean recording = true;
     private long lastt = 0;// krece od nule
 
-    public void startrecord() {
+    synchronized public void startrecord() {
         if (!mode.equals(Modes.RECORD))
             return;
 
@@ -277,7 +277,7 @@ public class Piano extends JPanel {
         recording = true;
     }
 
-    public void endrecord() {
+    synchronized public void endrecord() {
         if (!mode.equals(Modes.RECORD))
             return;
         if (recording != true)
@@ -288,10 +288,7 @@ public class Piano extends JPanel {
         comp.save();
     }
 
-    private void recordnote(char c, MidiNoteInfo m) {
-        // if (System.currentTimeMillis() - m.t_start < EIGHTPLAYTIME)
-        // return;
-        //logika za chordove?
+    synchronized void recordnote(char c, MidiNoteInfo m) {
 
         if (lastt != 0) {
             // dodaj pauze
@@ -304,18 +301,23 @@ public class Piano extends JPanel {
             if (n % 2 == 1) {
                 comp.insert(new Pause(Duration.EIGHT));
             }
+
+            if (n == 0 && (System.currentTimeMillis() - m.t_start) / EIGHTPLAYTIME == 2) {
+                // chord logika
+                comp.insertlastchord(new Note(c, Duration.QUART));
+            }
         }
         // dodaj notu
         long t = System.currentTimeMillis() - m.t_start;
 
         long n = t / EIGHTPLAYTIME;
-        System.out.println(t + " " + n);
         for (int i = 0; i < n / 2; i++) {
             // dodaj cetvrtine
             comp.insert(new Note(c, Duration.QUART));
         }
-        if (n % 2 == 1 || n==0)
+        if (n % 2 == 1 || n == 0)
             comp.insert(new Note(c, Duration.EIGHT));
+
         comp.repaint();
         lastt = System.currentTimeMillis();
     }

@@ -164,13 +164,13 @@ public class Keyboard extends JPanel implements KeyListener {
     public void keyPressed(KeyEvent e) {
         // System.out.println(e.getKeyChar());
         press(e.getKeyChar());
-        piano.handlepress(e.getKeyChar());
+        piano.press(e.getKeyChar());
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         release(e.getKeyChar());
-        piano.handlerelease(e.getKeyChar());
+        piano.release(e.getKeyChar());
     }
 
 }
