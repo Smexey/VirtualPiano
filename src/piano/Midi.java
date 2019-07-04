@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import javax.sound.midi.*;
-import piano.*;
 import java.io.*;
 
 /**

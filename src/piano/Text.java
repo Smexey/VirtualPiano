@@ -54,7 +54,6 @@ public class Text implements FileFormatter {
                 writer = null;
                 first = true;
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

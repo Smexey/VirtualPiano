@@ -9,7 +9,6 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Synthesizer;
 import javax.swing.JPanel;
 
-import gui.Keyboard;
 import piano.MusicSymbol.Duration;
 
 import java.awt.Color;
@@ -29,7 +28,7 @@ public class Piano extends JPanel {
     public static final int DEFAULT_VELOCITY = 60;
     protected static final long EIGHTPLAYTIME = 1000 / 8;
 
-    private Keyboard keyboard;
+    private NoteOutputer keyboard;
 
     public static enum Modes {
         GAME, AUTOPLAY, RECORD;
@@ -42,33 +41,20 @@ public class Piano extends JPanel {
             return;
 
         if (m.equals(Modes.GAME)) {
-            swaptogame();
+            player.reset();
+            mode = Modes.GAME;
+            game.reset();
         } else if (m.equals(Modes.AUTOPLAY)) {
-            swaptoautoplay();
+            comp.reset();
+            mode = Modes.AUTOPLAY;
         } else {
-            swaptorecord();
+            player.reset();
+            mode = Modes.RECORD;
         }
     }
 
-    public void setkeyboard(Keyboard k) {
+    public void setNoteOutputer(NoteOutputer k) {
         keyboard = k;
-    }
-
-    private void swaptogame() {
-        player.reset();
-        mode = Modes.GAME;
-        game.reset();
-    }
-
-    private void swaptoautoplay() {
-        comp.reset();
-        mode = Modes.AUTOPLAY;
-    }
-
-    private void swaptorecord() {
-        player.reset();
-        mode = Modes.RECORD;
-
     }
 
     protected static class MidiNoteInfo {
@@ -89,7 +75,7 @@ public class Piano extends JPanel {
 
     private MidiChannel channel;
 
-    private Player player = new Player();
+    private Player player;
     private Game game;
 
     public String mapChartoStr(char c) {
@@ -104,15 +90,9 @@ public class Piano extends JPanel {
         channel = getChannel(instrument);
         setLayout(new GridLayout(0, 1));
         game = new Game();
+        player = new Player();
         player.start();
-
-        comp = new Composition();
-        comp.printStrings(compstrings);
-        add(comp);
-        comp.setPiano(this);
-        revalidate();
-
-        repaint();
+        newComp();
     }
 
     public Piano() throws MidiUnavailableException {
@@ -187,10 +167,6 @@ public class Piano extends JPanel {
     }
 
     public void play(char c) {
-        press(c);
-    }
-
-    public void press(char c) {
         MidiNoteInfo p = mapa.get(c);
         if (p != null) {
             if (!p.isplaying)
@@ -264,21 +240,25 @@ public class Piano extends JPanel {
     private long lastt = 0;// krece od nule
     private long lastt_start = 0;
 
-    synchronized public void startrecord() {
+    public void startrecord() {
         if (!mode.equals(Modes.RECORD))
             return;
 
-        remove(comp);
-        comp = new Composition();
-        comp.printStrings(compstrings);
-        add(comp);
-        comp.setPiano(this);
-        revalidate();
-        repaint();
+        newComp();
         recording = true;
     }
 
-    synchronized public void endrecord() {
+    private void newComp() {
+        if (comp != null)
+            remove(comp);
+        comp = new Composition(this);
+        comp.printStrings(compstrings);
+        add(comp);
+        revalidate();
+        repaint();
+    }
+
+    public void endrecord() {
         if (!mode.equals(Modes.RECORD))
             return;
         if (recording != true)
@@ -289,8 +269,7 @@ public class Piano extends JPanel {
         comp.save();
     }
 
-    synchronized void recordnote(char c, MidiNoteInfo m) {
-
+    public void recordnote(char c, MidiNoteInfo m) {
         if (lastt != 0) {
             // dodaj pauze
             long t = System.currentTimeMillis() - lastt;
@@ -308,10 +287,10 @@ public class Piano extends JPanel {
         long t = System.currentTimeMillis() - m.t_start;
 
         long n = t / EIGHTPLAYTIME;
-        if ((m.t_start - lastt_start) / (2*EIGHTPLAYTIME) == 0 && n ==2) {
+        if ((m.t_start - lastt_start) / (2 * EIGHTPLAYTIME) == 0 && n >= 2) {
             // chord logika
             comp.insertlastchord(new Note(c, Duration.QUART));
-            n-=2;
+            n -= 2;
         }
         for (int i = 0; i < n / 2; i++) {
             // dodaj cetvrtine
@@ -319,9 +298,6 @@ public class Piano extends JPanel {
         }
         if (n % 2 == 1 || n == 0)
             comp.insert(new Note(c, Duration.EIGHT));
-
-
-        
 
         comp.repaint();
         lastt_start = m.t_start;
@@ -333,7 +309,7 @@ public class Piano extends JPanel {
         private static final double ERRORPERCENT = 0.8;// +- delta
 
         public void play(MidiNoteInfo m) {
-
+            m.t_start = System.currentTimeMillis();
         }
 
         public void release(MidiNoteInfo m) {
@@ -405,9 +381,6 @@ public class Piano extends JPanel {
 
         private boolean working = false;
         private boolean paused = false;
-
-        public Player() {
-        }
 
         @Override
         public void run() {
@@ -508,7 +481,7 @@ public class Piano extends JPanel {
         }
 
         @Override
-        public void interrupt() {
+        synchronized public void interrupt() {
             working = false;
             super.interrupt();
         }

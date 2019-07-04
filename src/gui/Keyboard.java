@@ -1,6 +1,8 @@
 package gui;
 
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -10,12 +12,13 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
+import piano.NoteOutputer;
 import piano.Piano;
 
 /**
  * Keyboard
  */
-public class Keyboard extends JPanel implements KeyListener {
+public class Keyboard extends JPanel implements KeyListener,NoteOutputer {
     private static final long serialVersionUID = 1L;
     private static final int NUMOFWHITEKEYS = 5 * 7;
 
@@ -113,15 +116,11 @@ public class Keyboard extends JPanel implements KeyListener {
         repaint();
     }
 
-    private Character currplayedchar;
-
     private class KeyMouseListener implements MouseListener {
-
+        private Character currplayedchar;
         @Override
         public void mousePressed(MouseEvent e) {
             int mousex = e.getX();// sta koji kurac??
-            if (e.getY() < 0)
-                return;
             double keywidth = getWidth() / (double) NUMOFWHITEKEYS;
             int ind = (int) (((double) mousex / (double) keywidth));
 
@@ -151,7 +150,6 @@ public class Keyboard extends JPanel implements KeyListener {
                 release(currplayedchar);
                 piano.release(currplayedchar);
             }
-
         }
     }
 
@@ -163,14 +161,17 @@ public class Keyboard extends JPanel implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         // System.out.println(e.getKeyChar());
+        if(e.isAltDown()) return;
         press(e.getKeyChar());
-        piano.press(e.getKeyChar());
+        piano.play(e.getKeyChar());
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if(e.isAltDown()) return;
         release(e.getKeyChar());
         piano.release(e.getKeyChar());
     }
 
+    
 }

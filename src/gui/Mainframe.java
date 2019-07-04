@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.nio.charset.CharsetEncoder;
 
 import javax.sound.midi.MidiUnavailableException;
 import javax.swing.ButtonGroup;
@@ -29,7 +28,6 @@ public class Mainframe extends JFrame {
     private boolean saved = false;
     private Piano piano;
 
-
     public Mainframe(String name) throws MidiUnavailableException {
         super(name);
         
@@ -38,13 +36,11 @@ public class Mainframe extends JFrame {
 
         piano = new Piano();
         keyboard = new Keyboard(piano);
-        piano.setkeyboard(keyboard);
+        piano.setNoteOutputer(keyboard);
 
         piano.loadmap(Piano.DEFAULT_MAP_PATH);
-        // piano.loadComp("C:\\Users\\Pyo\\Desktop\\VirtualPiano\\input\\fur_elise.txt");
-        // piano.loadComp("output.txt");
 
-        // C:\\Users\\Pyo\\Desktop\\VirtualPiano\\input\\fur_elise.txt
+        // input\\fur_elise.txt
 
         add(piano, BorderLayout.CENTER);
         
@@ -80,6 +76,7 @@ public class Mainframe extends JFrame {
         setJMenuBar(menubar);
 
         JMenu options = new JMenu("Composition");
+        options.setMnemonic('C');
         menubar.add(options);
 
         JMenuItem menuitem = new JMenuItem("Load");
@@ -110,7 +107,7 @@ public class Mainframe extends JFrame {
         options.add(menuitem);
 
         options = new JMenu("Modes");
-
+        options.setMnemonic('M');
         ButtonGroup group = new ButtonGroup();
         JRadioButtonMenuItem menucheck = new JRadioButtonMenuItem("Autoplay", true);
         group.add(menucheck);
@@ -139,6 +136,7 @@ public class Mainframe extends JFrame {
         menubar.add(options);
 
         options = new JMenu("Options");
+        options.setMnemonic('O');
         JCheckBoxMenuItem chkboxmenuitem = new JCheckBoxMenuItem("Show keyboard help", true);
         chkboxmenuitem.addActionListener(e -> {
             keyboard.setLabels(chkboxmenuitem.getState());
@@ -154,6 +152,7 @@ public class Mainframe extends JFrame {
         menubar.add(options);
 
         options = new JMenu("Record");
+        options.setMnemonic('R');
         menuitem = new JMenuItem("Start");
         menuitem.addActionListener(e -> {
             piano.startrecord();
@@ -170,6 +169,7 @@ public class Mainframe extends JFrame {
         menubar.add(options);
 
         options = new JMenu("Save");
+        options.setMnemonic('S');
         menuitem = new JMenuItem("Midi");
         menuitem.addActionListener(e -> {
             saved = true;

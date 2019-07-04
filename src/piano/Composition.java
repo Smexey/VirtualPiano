@@ -31,8 +31,10 @@ public class Composition extends JPanel {
             EIGHTNOTECOLOR = new Color(127, 255, 0), EIGHTPAUSECOLOR = new Color(0,100,0);
 
 
-    public Composition() {
 
+
+    public Composition(Piano p) {
+        setPiano(p);
     }
 
     synchronized public MusicSymbol getfirst(){
@@ -114,7 +116,7 @@ public class Composition extends JPanel {
             }
         } else {
             // chord ili brzi
-            if (!(str.charAt(2) != ' ')) {
+            if (!(str.charAt(2) != ' ')|| str.length()==3) {
                 // brzi
                 // dodaj sve kao zasebne osmina note
                 for (int i = 1; i < str.length(); i += 2) {
